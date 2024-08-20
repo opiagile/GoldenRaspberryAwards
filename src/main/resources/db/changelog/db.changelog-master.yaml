@@ -16,10 +16,13 @@ databaseChangeLog:
                   name: title
                   type: varchar(255)
               - column:
-                  name: year
+                  name: studios
+                  type: varchar(255)
+              - column:
+                  name: movie_year
                   type: int
               - column:
-                  name: producer
+                  name: producers
                   type: varchar(255)
               - column:
                   name: winner
