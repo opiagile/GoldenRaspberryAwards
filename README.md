@@ -15,26 +15,22 @@ Esta aplicação RESTful permite consultar os produtores de filmes que ganharam 
 
 ## Configuração
 ### Pré-requisitos
-- **Com Docker:** Maven, Docker e Docker Compose instalados
+- **Com Docker:** Docker e Docker Compose instalados
 - **Sem Docker:** Maven e JDK 17 instalados
 
 ## Como Rodar a Aplicação
 
 ### Opção 1: Usando Docker
 1. Clone o repositório.
-2. No diretório raiz do projeto, certifique-se de que o projeto foi compilado:
-   ```bash
-   mvn clean package
-   ```
-3. Construa a imagem Docker:
+2. Construa a imagem Docker:
    ```bash
    docker build -t goldenraspberryawards .
    ```
-4. Inicie os contêineres usando Docker Compose:
+3. Inicie os contêineres usando Docker Compose:
    ```bash
    docker-compose up
    ```
-5. A aplicação estará disponível em `http://localhost:8080`.
+4. A aplicação estará disponível em `http://localhost:8080`.
 
 ### Opção 2: Sem Docker (Usando Spring Boot diretamente)
 1. Clone o repositório.
