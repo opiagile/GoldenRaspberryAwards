@@ -9,34 +9,64 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.util.*;
+
 @Service
 public class ProducerService {
 
     @Autowired
     private MovieRepository movieRepository;
 
-    public List<ProducerIntervalDTO> calculateIntervals() {
-        List<Movie> winningMovies = movieRepository.findAll()
+    public ProducerIntervalResponseDTO calculateIntervals() {
+        Map<String, List<Integer>> grupoProducer = new HashMap<>();
+        List<Movie> listaFilme = movieRepository.findAll()
                 .stream()
                 .filter(Movie::isWinner)
                 .collect(Collectors.toList());
 
-        List<ProducerIntervalDTO> intervals = new ArrayList<>();
-
-        // Loop de teste iterando sobre os filmes vencedores
-        for (int i = 0; i < winningMovies.size(); i++) {
-            Movie movie = winningMovies.get(i);
-
-            // Apenas valores de teste - isso deve ser substituído pela lógica real
-            intervals.add(new ProducerIntervalDTO(
-                    movie.getProducers(),
-                    i + 1,
-                    movie.getMovieYear(),
-                    movie.getMovieYear() + 2
-            ));
+        // Agrupar os anos de vitória por produtor
+        for (Movie movie : listaFilme) {
+            var splittedProducers = movie.getProducers().split(",\\s*|\\band\\bs*");
+            for (String producer : splittedProducers) {
+                var trimmedProducer = producer.trim();
+                grupoProducer.computeIfAbsent(trimmedProducer, k -> new ArrayList<>()).add(movie.getMovieYear());
+            }
         }
 
-        return intervals;
+        // Montar as listas min e max com base nos intervalos calculados
+        var respondeList = new ProducerIntervalResponseDTO();
+        respondeList.setMin(montarDados(grupoProducer, false));
+        respondeList.setMax(montarDados(grupoProducer, true));
+
+        return respondeList;
+    }
+
+    private List<ProducerIntervalDTO> montarDados(Map<String, List<Integer>> grupoProducer, boolean isMax) {
+        return grupoProducer.entrySet().stream()
+                .filter(entry -> entry.getValue().size() > 1)
+                .flatMap(entry -> {
+                    String producer = entry.getKey();
+                    List<Integer> years = entry.getValue();
+                    Collections.sort(years); // Garantir que os anos estejam ordenados
+                    List<ProducerIntervalDTO> dtos = new ArrayList<>();
+                    for (int i = 1; i < years.size(); i++) {
+                        int interval = years.get(i) - years.get(i - 1);
+                        dtos.add(new ProducerIntervalDTO(producer, interval, years.get(i - 1), years.get(i)));
+                    }
+                    return dtos.stream();
+                })
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        dtos -> {
+                            dtos.sort(Comparator.comparingInt(ProducerIntervalDTO::getInterval).thenComparingInt(ProducerIntervalDTO::getPreviousWin));
+                            if (isMax) {
+                                dtos.sort(Comparator.comparingInt(ProducerIntervalDTO::getInterval).reversed());
+                            }
+                            int targetInterval = dtos.isEmpty() ? 0 : dtos.get(0).getInterval();
+                            return dtos.stream()
+                                    .filter(dto -> dto.getInterval() == targetInterval)
+                                    .collect(Collectors.toList());
+                        }
+                ));
     }
 }
-
