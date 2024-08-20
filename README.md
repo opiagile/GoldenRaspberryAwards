@@ -15,7 +15,7 @@ Esta aplicação RESTful permite consultar os produtores de filmes que ganharam 
 
 ## Configuração
 ### Pré-requisitos
-- **Com Docker:** Docker e Docker Compose instalados
+- **Com Docker:** Maven, Docker e Docker Compose instalados
 - **Sem Docker:** Maven e JDK 17 instalados
 
 ## Como Rodar a Aplicação
