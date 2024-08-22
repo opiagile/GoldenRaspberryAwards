@@ -49,7 +49,8 @@ Esta aplicação RESTful permite consultar os produtores de filmes que ganharam 
    Isso irá rodar os testes de integração configurados para a aplicação.
 
 ## Endpoints
-### GET /producers/intervals
+### GET 
+### http://localhost:8080/producers/intervals
 Retorna os produtores com o menor e maior intervalo entre prêmios consecutivos.
 
 ---
